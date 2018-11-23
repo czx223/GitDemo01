@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hwua.dao.UsersMapper">
+  <resultMap id="BaseResultMap" type="com.hwua.entity.Users">
+    <id column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="uname" jdbcType="VARCHAR" property="uname" />
+    <result column="uage" jdbcType="VARCHAR" property="uage" />
+    <result column="uaddress" jdbcType="VARCHAR" property="uaddress" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    uid, uname, uage, uaddress
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from users
+    where uid = #{uid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from users
+    where uid = #{uid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hwua.entity.Users">
+    insert into users (uid, uname, uage, 
+      uaddress)
+    values (#{uid,jdbcType=INTEGER}, #{uname,jdbcType=VARCHAR}, #{uage,jdbcType=VARCHAR}, 
+      #{uaddress,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hwua.entity.Users">
+    insert into users
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="uname != null">
+        uname,
+      </if>
+      <if test="uage != null">
+        uage,
+      </if>
+      <if test="uaddress != null">
+        uaddress,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="uname != null">
+        #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="uage != null">
+        #{uage,jdbcType=VARCHAR},
+      </if>
+      <if test="uaddress != null">
+        #{uaddress,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hwua.entity.Users">
+    update users
+    <set>
+      <if test="uname != null">
+        uname = #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="uage != null">
+        uage = #{uage,jdbcType=VARCHAR},
+      </if>
+      <if test="uaddress != null">
+        uaddress = #{uaddress,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where uid = #{uid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hwua.entity.Users">
+    update users
+    set uname = #{uname,jdbcType=VARCHAR},
+      uage = #{uage,jdbcType=VARCHAR},
+      uaddress = #{uaddress,jdbcType=VARCHAR}
+    where uid = #{uid,jdbcType=INTEGER}
+  </update>
+</mapper>

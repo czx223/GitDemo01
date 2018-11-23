@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- 加载 jdbc.properties 数据连接配置信息 -->
+	<context:property-placeholder location="classpath:db.properties" />
+	<!-- 扫描Dao层注解包 -->
+	<context:component-scan base-package="com.hwua.dao"></context:component-scan>
+	<!-- c3p0数据源配置 -->
+	<bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<!-- 指定连接池中保留的最大连接数. Default:15 -->
+		<property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
+		<!-- 指定连接池中保留的最小连接数 -->
+		<property name="minPoolSize" value="${c3p0.minPoolSize}" />
+		<!-- 指定连接池的初始化连接数 取值应在minPoolSize 与 maxPoolSize 之间.Default:3 -->
+		<property name="initialPoolSize" value="${c3p0.initialPoolSize}" />
+		<!-- 最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。 Default:0 -->
+		<property name="maxIdleTime" value="${c3p0.maxIdleTime}" />
+		<!-- 当连接池中的连接耗尽的时候c3p0一次同时获取的连接数. Default:3 -->
+		<property name="acquireIncrement" value="${c3p0.acquireIncrement}" />
+		<!-- JDBC的标准,用以控制数据源内加载的PreparedStatements数量。 但由于预缓存的statements属于单个connection而不是整个连接池所以设置这个参数需要考虑到多方面的因数. 
+			如果maxStatements与maxStatementsPerConnection均为0,则缓存被关闭。Default:0 -->
+		<property name="maxStatements" value="${c3p0.maxStatements}" />
+		<!-- 每60秒检查所有连接池中的空闲连接.Default:0 -->
+		<property name="idleConnectionTestPeriod" value="${c3p0.idleConnectionTestPeriod}" />
+		<property name="testConnectionOnCheckout" value="${c3p0.testConnectionOnCheckout}" />
+	</bean>
+	
+	<!-- mapper配置 -->
+	<!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 自动扫描mapper.xml文件 -->
+		<property name="mapperLocations" value="classpath:com/hwua/mapper/*.xml"></property>
+		<!-- 它一般对应我们的实体类所在的包，这个时候会自动取对应包中不包括包名的简单类名作为 包括包名的别名。com.hwua.entity.Users 
+			别名Users -->
+		<!--多个package之间可以用逗号或者分号等来进行分隔。(value的值一定要是包的全名) -->
+		<property name="typeAliasesPackage" value="com.hwua.entity" />
+		<!-- 方式一 分页插件 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	</bean>
+
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.hwua.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+	
+	
+	
+</beans>

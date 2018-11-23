@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- 引入 applicationContext-service.xml  -->
+	<import resource="applicationContext-service.xml"/>
+	<!-- 声明式事物控制开始 -->
+	<!-- 定义数据源事物管理器 org.springframework.jdbc.datasource.DataSourceTransactionManager 
+		只适合jdbc和没有mybatis -->
+	<!-- 定义数据源事物管理器 org.springframework.orm.hibernate4.HibernateTransactionManager 
+		适合hibernate -->
+	<bean id="dataSourceTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 声明事物控制通知 之前aop的增强类 -->
+	<tx:advice id="txAdvice" transaction-manager="dataSourceTransactionManager">
+		<!-- 增强(事务)的属性的配置 -->
+		<tx:attributes>
+			<!-- isolation:DEFAULT :事务的隔离级别. propagation :事务的传播行为. read-only :false.不是只读 
+				timeout :-1 no-rollback-for :发生哪些异常不回滚 rollback-for :发生哪些异常回滚事务 -->
+			<tx:method name="insert*" isolation="DEFAULT" propagation="REQUIRED"
+				read-only="false" />
+			<tx:method name="add*" isolation="DEFAULT" propagation="REQUIRED"
+				read-only="false" />
+			<tx:method name="update*" isolation="DEFAULT" propagation="REQUIRED"
+				read-only="false" />
+			<tx:method name="delete*" isolation="DEFAULT" propagation="REQUIRED"
+				read-only="false" />
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="load*" read-only="true" />
+			<tx:method name="select*" read-only="true" />
+			<tx:method name="get*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 配置事物的 aop根节点 -->
+	<aop:config>
+		<!-- 定义切点:哪些类的哪些方法应用增强 within指定哪些类 -->
+		<aop:pointcut expression="within(com.hwua.biz..*)" id="txPointCut" />
+		<!-- 定义切面 -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut" />
+	</aop:config>
+</beans>
